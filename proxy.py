@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+# Code by Joshua Campbell
+
 import socket
-import os
+import os, sys, select
 from random import randint
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -41,8 +43,10 @@ while True:
       if (part):
         clientSocket.sendall(part)
         request.extend(part)
-      else:
+      elif part is None:
         break
+      else:
+        exit(0)
 
     if len(request) > 0:
       print "### REQUEST ###"
@@ -60,9 +64,16 @@ while True:
       if (part):
         incomingSocket.sendall(part)
         response.extend(part)
-      else:
+      elif part is None:
         break
+      else:
+        exit(0)
 
     if len(response) > 0:
       print "### RESPONSE ###"
       print response
+      select.select(
+        [incomingSocket, clientSocket],  # read
+        [],                              # write
+        [incomingSocket, clientSocket],  # exceptions
+        1.0)                             # timeout
