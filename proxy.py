@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import socket
+import os
 from random import randint
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,6 +18,8 @@ serverSocket.listen(5)  # start listening, up to 5 connections in a queue
 while True:
   (incomingSocket, address) = serverSocket.accept()
   print "We got a connection from %s" % (str(address))
+  if os.fork() != 0:
+      continue
 
   clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
